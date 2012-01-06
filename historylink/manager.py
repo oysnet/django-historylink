@@ -14,7 +14,7 @@ class Manager(object):
         for model in args:
             
             if model in self._registry:
-                raise AlreadyRegistered(model)
+                continue
             
             self._registry.append(model)
             
