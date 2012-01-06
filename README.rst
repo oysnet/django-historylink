@@ -13,7 +13,7 @@ Installation
 
 To install the latest stable version::
 
-	pip install git+git@github.com:oxys-net/django-historylink.git#egg=django-historylink
+	pip install -e git+https://github.com/oxys-net/django-historylink.git#egg=django-historylink
 
 
 You will need to include ``historylink`` in your ``INSTALLED_APPS``::
