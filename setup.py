@@ -13,7 +13,7 @@ CLASSIFIERS = [
 KEYWORDS = 'django url change redirect 404 301'
 
 
-setup(name = 'mailsnake',
+setup(name = 'historylink',
     version = historylink.__version__,
     description = """Store model url change, od a permanent redirect on 404""",
     author = historylink.__author__,
