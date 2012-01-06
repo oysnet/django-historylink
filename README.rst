@@ -37,8 +37,9 @@ Usage
 In your models ::
 
 	from historylink.manager import manager
-	manager.register(model1, model2, ...)
-	
+	manager.register(model)
+	manager.register([model1, model2])
+	manager.register([model1, model2], MyModelManager) # where MyModelManager inherit from manager.ModelManager
 	
 --------------
 Django command

@@ -6,37 +6,47 @@ from historylink.models import HistoryLink
 class AlreadyRegistered(Exception):
     pass
 
-class Manager(object):
+
+class ModelManager(object):
     
-    _registry = []
-    
-    def register(self, *args):
-        for model in args:
-            
-            if model in self._registry:
-                continue
-            
-            self._registry.append(model)
-            
-            post_save.connect(self.post_save, sender=model)
-            post_delete.connect(self.post_delete, sender=model)
-            
     def post_save(self, sender, instance, created, **kwargs):
-        self._createHistoryLink(instance)
+        self.createHistoryLink(instance)
         
     def post_delete(self, sender, instance, **kwargs):
         HistoryLink.objects.filter(content_type=ContentType.objects.get_for_model(instance), object_id=instance.pk).delete()
 
     
-    def _createHistoryLink(self, o):
+    def createHistoryLink(self, o):
         HistoryLink.objects.get_or_create(content_type=ContentType.objects.get_for_model(o), 
                                                   object_id=o.pk, url=o.get_absolute_url(), 
                                                   defaults={'content_object' : o, 
                                                             'url' : o.get_absolute_url()})
+    
+
+class Manager(object):
+    
+    _registry = {}
+    
+    def register(self, models, manager=ModelManager):
+        
+        if not isinstance(models, (list, tuple,)):
+            models = [models]
+        
+        for model in models:
+            
+            if model in self._registry:
+                continue
+            
+            self._registry[model] = manager()
+            
+            post_save.connect(self._registry[model].post_save, sender=model)
+            post_delete.connect(self._registry[model].post_delete, sender=model)
+            
+    
         
     def syncAll(self):
         
-        for model in self._registry:
+        for model, manager in self._registry.iteritems():
             
             ct = ContentType.objects.get_for_model(model)
             
@@ -45,6 +55,6 @@ class Manager(object):
             print "syncing %s.%s (%s objects)" % (ct.app_label, ct.name, query.count())
             
             for o in query:
-                self._createHistoryLink(o)
+                manager.createHistoryLink(o)
     
 manager = Manager()
