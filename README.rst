@@ -46,4 +46,4 @@ Django command
 
 The command below add HistoryLink object for your existing datas
 
-	.manage.py historylink_sync
+	./manage.py historylink_sync
