@@ -4,10 +4,11 @@ from django.http import Http404, HttpResponsePermanentRedirect
 from historylink.models import HistoryLink as HistoryLinkModel
 
 class HistoryLink(object):
-    
+    """
     def process_exception(self, request, exception):
         
         if isinstance(exception, Http404):
+            import pdb; pdb.set_trace()
             try:
                 hl = HistoryLinkModel.objects.get(url=request.META.get('PATH_INFO'))
                 
@@ -16,4 +17,20 @@ class HistoryLink(object):
             except:
                 return
             
+    """        
             
+    def process_response(self, request, response):
+        if response.status_code != 404:
+            return response # No need to check for a redirect for non-404 responses.
+        path = request.get_full_path()
+        
+        try:
+            hl = HistoryLinkModel.objects.get(url=path)
+            
+            if path != hl.content_object.get_absolute_url():                
+                return HttpResponsePermanentRedirect(redirect_to=hl.content_object.get_absolute_url())
+        except:
+            pass
+
+        # No redirect was found. Return the response.
+        return response
