@@ -42,7 +42,16 @@ class Manager(object):
             post_save.connect(self._registry[model].post_save, sender=model)
             post_delete.connect(self._registry[model].post_delete, sender=model)
             
-    
+    def syncModel(self, model):
+        
+        ct = ContentType.objects.get_for_model(model)
+        manager = self._registry.get(model)
+        query = model.objects.all()
+            
+        print "syncing %s.%s (%s objects)" % (ct.app_label, ct.name, query.count())
+        
+        for o in query:
+            manager.createHistoryLink(o)
         
     def syncAll(self):
         
