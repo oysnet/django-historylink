@@ -22,13 +22,19 @@ class HistoryLink(object):
     def process_response(self, request, response):
         if response.status_code != 404:
             return response # No need to check for a redirect for non-404 responses.
-        path = request.get_full_path()
+        path_qs = request.get_full_path().split('?')
         
+        path = path_qs[0]
+        if len(path_qs) > 1:
+            qs = "?" + '?'.join(path_qs[1:])
+        else:
+            qs = ''
+            
         try:
             hl = HistoryLinkModel.objects.get(url=path)
             
             if path != hl.content_object.get_absolute_url():                
-                return HttpResponsePermanentRedirect(redirect_to=hl.content_object.get_absolute_url())
+                return HttpResponsePermanentRedirect(redirect_to="%s%s" %( hl.content_object.get_absolute_url()), qs )
         except:
             pass
 
