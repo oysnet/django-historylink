@@ -34,11 +34,7 @@ class HistoryLink(object):
             hl = HistoryLinkModel.objects.get(url=path)
             
             if path != hl.content_object.get_absolute_url():                
-<<<<<<< HEAD
                 return HttpResponsePermanentRedirect(redirect_to="%s%s" %( hl.content_object.get_absolute_url(), qs))
-=======
-                return HttpResponsePermanentRedirect(redirect_to="%s%s" %( hl.content_object.get_absolute_url()), qs )
->>>>>>> 665dfd3c7e0703371a72d1eabc2d83cdae21821a
         except:
             pass
 
